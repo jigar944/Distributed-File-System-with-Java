@@ -290,7 +290,7 @@ public class Series implements Serializable
 
         // Schedule a cleanup timeout task.
         TimerTask       cleanup_timeout = new CleanupTimeoutTask(state);
-        timeout_timer.schedule(cleanup_timeout, (long)timeout * 3000);
+        timeout_timer.schedule(cleanup_timeout, (long)timeout * 1000);
 
         // Wait until cleanup is stopped, either by cleanupSuccess or
         // cleanupFailure, or by the cleanup timeout task.

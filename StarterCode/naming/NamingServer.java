@@ -9,10 +9,8 @@ import storage.Storage;
 
 import java.io.FileNotFoundException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /** Naming server.
 
@@ -46,7 +44,8 @@ public class NamingServer implements Service, Registration
     Directory_tree tree;
     Stub serviceStub;
     HashSet<Command> RegisteredServer = new HashSet<>();
-    ArrayList<Node> allNodes;
+    ArrayList<Directory_tree> allNodes = new ArrayList<>();
+
 
     /** Creates the naming server object.
 
@@ -79,8 +78,13 @@ public class NamingServer implements Service, Registration
      */
     public synchronized void start() throws RMIException
     {
-        this.serviceSkeleton.start();
-        this.registrationSkeleton.start();
+        try{
+            this.serviceSkeleton.start();
+            this.registrationSkeleton.start();
+        }catch (Exception e){
+            throw new RMIException("Error while starting Registration ans Service skeletons in void start method");
+        }
+
 
     }
 
@@ -117,13 +121,24 @@ public class NamingServer implements Service, Registration
     @Override
     public boolean isDirectory(Path path) throws FileNotFoundException
     {
-        throw new UnsupportedOperationException("not implemented");
+        if (path==null)
+            throw new NullPointerException("Null path provided");
+
+        if (allNodes.stream().map(Directory_tree::getP).collect(Collectors.toList()).contains(path)){
+            return true;
+        }else
+            return false;
+
     }
 
     @Override
     public String[] list(Path directory) throws FileNotFoundException
     {
+        if (directory.equals(null))
+            throw new NullPointerException("Null path provided");
+
         throw new UnsupportedOperationException("not implemented");
+
     }
 
     @Override
@@ -167,64 +182,96 @@ public class NamingServer implements Service, Registration
 
         ArrayList<Path> copyfiles = checkduplicaefiles(files,client_stub,command_stub);
 
+        Path[] toArray = new Path[0];
 
-        throw new UnsupportedOperationException("not implemented");
+        return copyfiles.toArray(toArray);
     }
 
     private ArrayList<Path> checkduplicaefiles(Path[] files,Storage storageStub,Command commandStub) {
 
-        ArrayList<Path> temp = new ArrayList<>();
+        ArrayList<Path> copyFiles = new ArrayList<>();
         for (Path p:files) {
-            if (exist(p,storageStub,commandStub)){
-
-            }else {
-                temp.add(p);
+            if (exist(p,storageStub,commandStub,copyFiles)){
+                continue;
             }
         }
-        return temp;
+        System.out.println("temp : "+copyFiles);
+        return copyFiles;
     }
 
-    private boolean exist(Path p,Storage storageStub,Command commandStub) {
+    private boolean exist(Path p,Storage storageStub,Command commandStub,ArrayList<Path> list) {
 
         if (p.isRoot()){
             return true;
         }
 
+        if (allNodes.stream().map(Directory_tree::getP).collect(Collectors.toList()).contains(p)){
+            System.out.println("Path exist :"+p);
+            list.add(p);
+            return false;
+        }
+
+
         String[] ArrayPath = p.toString().split("/");
-        List<String> ArrayPath1 = Arrays.asList(ArrayPath);
+        List<String> ArrayPath1 = new LinkedList<>(Arrays.asList(ArrayPath));
 
         //if there is 1 component in the list
 
         if (ArrayPath.length==1){
-            for (Node dT: allNodes) {
-                if (dT.getFilename().equals(ArrayPath[0])){
+            for (Directory_tree dT: allNodes) {
+                if (dT.getP().equals(p)){
                     return false;
                 }
             }
             allNodes.add(new Directory_tree(p,ArrayPath[0],commandStub,storageStub));
             return true;
-        }
+        }else {
+            if(allNodes!=null){
+                for (Directory_tree dT:allNodes) {
 
+                    if (dT.getP().equals(p)){
+                        return false;
+                    }
 
+                    if (dT.getFilename().equals(ArrayPath1.get(1))){
+                        Path temp = dT.getP();
 
-        for (Node dT:allNodes) {
+                        String[] ArrayPath2 = p.toString().split("/");
 
-            if (dT.filename.equals(ArrayPath1.get(0)) && dT.isDirectory()){
-                ArrayPath1.remove(0);
-                String[] newPath = p.toString().split("/",2);
-                Path p1 = new Path(newPath[1]);
-                return exist(p1,storageStub,commandStub);
-            }else if (dT.getFilename().equals(ArrayPath1.get(0)) && !(dT.isDirectory())){
-                return false;
+                        List<String> ArrayPath3 = new LinkedList<>(Arrays.asList(ArrayPath2));
+
+                        ArrayPath3.remove(1);
+                        ArrayPath1.remove(1);
+                        String tempPath = "/"+ dT.getFilename();
+                        while(true){
+                            if (ArrayPath3.size()>1){
+                                return false;
+                            }
+                            if (ArrayPath3.get(1).equals(ArrayPath1.get(1))){
+                                tempPath+="/"+ ArrayPath1.get(1);
+                                ArrayPath1.remove(1);
+                                ArrayPath3.remove(1);
+                            }else {
+                                allNodes.add(new Directory_tree(new Path(tempPath+"/"+ArrayPath1.get(1)),ArrayPath1.get(1),commandStub,storageStub));
+                                return true;
+                            }
+                        }
+
+                    }
+
+                }
+
             }
 
+            String tempPath = "";
+            while (ArrayPath1.size()>1){
+                tempPath+="/"+ArrayPath1.get(1);
+                allNodes.add(new Directory_tree(new Path(tempPath),ArrayPath1.get(1),commandStub,storageStub));
+                ArrayPath1.remove(1);
+
+            }
+
+            return true;
         }
-
-        Node newNode = new Node(p,ArrayPath1.get(0));
-        allNodes.add(newNode);
-
-        return true;
-
-
     }
 }

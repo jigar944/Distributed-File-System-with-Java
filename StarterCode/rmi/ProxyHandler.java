@@ -1,18 +1,22 @@
 package rmi;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-public class ProxyHandler implements InvocationHandler {
+public class ProxyHandler implements InvocationHandler, Serializable {
 
     private InetSocketAddress address;
     private Class<?> c;
 
-    public ProxyHandler(InetSocketAddress address, Class<? > c){
+    public ProxyHandler(InetSocketAddress address, Class<? > c) {
+        super();
         this.address = address;
         this.c = c;
     }
@@ -61,7 +65,9 @@ public class ProxyHandler implements InvocationHandler {
 
                 write.writeObject(functionName);
                 write.writeObject(tyesOfParamates);
+
                 write.writeObject(args);
+
 
                 result = (boolean)read.readObject();
                 MarshalledPacket = read.readObject();
@@ -70,9 +76,10 @@ public class ProxyHandler implements InvocationHandler {
 
             }catch (FileNotFoundException e){
                 throw new FileNotFoundException();
-            }
+            }catch (NullPointerException e){}
             catch (Exception e){
                 new_Socket.close();
+                e.printStackTrace();
                 throw new RMIException("RMI");
             }
             if (result == false) {

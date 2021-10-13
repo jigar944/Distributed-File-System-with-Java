@@ -181,9 +181,7 @@ public class Path implements Iterable<String>, Serializable
         if (isRoot()){
             throw new IllegalArgumentException("path represents root directory and has no parent.");
         }else {
-            String temp = "/" + this.p.split("/")[1];
-            Path newPath = new Path(temp);
-            return newPath;
+            return new Path(this.p.replaceAll("/[a-z]*$", ""));
         }
     }
 
@@ -229,7 +227,7 @@ public class Path implements Iterable<String>, Serializable
      */
     public File toFile(File root)
     {
-        throw new UnsupportedOperationException("not implemented");
+       return new File(root.getPath()+(this.toString()));
     }
 
     /** Compares two paths for equality.

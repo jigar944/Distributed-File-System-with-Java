@@ -49,8 +49,7 @@ public abstract class Stub
                       this interface cannot be dynamically created.
      */
     public static <T> T create(Class<T> c, Skeleton<T> skeleton)
-        throws UnknownHostException
-    {
+            throws UnknownHostException{
 
         if (!c.isInterface())
             throw new Error("C does not represent remote Interface");
@@ -66,7 +65,7 @@ public abstract class Stub
             throw new IllegalStateException("Address is not assigned");
         }
 
-        if (skeleton.getAddress().getPort() > 0 && skeleton.getAddress().equals("0.0.0.0/0.0.0.0"))
+        if (skeleton.getAddress().isUnresolved())
             throw new UnknownHostException("No Adress is assigned yet");
 
         ProxyHandler handler = new ProxyHandler(skeleton.getAddress(),c);
@@ -122,8 +121,7 @@ public abstract class Stub
                       this interface cannot be dynamically created.
      */
     public static <T> T create(Class<T> c, Skeleton<T> skeleton,
-                               String hostname)
-    {
+                               String hostname){
         if (!c.isInterface())
             throw new Error("C does not represent remote Interface");
 
@@ -156,8 +154,7 @@ public abstract class Stub
                       <code>RMIException</code>, or if an object implementing
                       this interface cannot be dynamically created.
      */
-    public static <T> T create(Class<T> c, InetSocketAddress address)
-    {
+    public static <T> T create(Class<T> c, InetSocketAddress address){
         if (!c.isInterface())
             throw new Error("C does not represent remote Interface");
 

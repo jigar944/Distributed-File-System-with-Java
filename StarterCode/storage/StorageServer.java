@@ -6,10 +6,12 @@ import rmi.RMIException;
 import rmi.Skeleton;
 import rmi.Stub;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.util.Comparator;
 
 /** Storage server.
 
@@ -64,14 +66,35 @@ public class StorageServer implements Storage, Command
                              cannot be registered.
      */
     public synchronized void start(String hostname, Registration naming_server)
-        throws RMIException, UnknownHostException, FileNotFoundException
-    {
+            throws RMIException, UnknownHostException, FileNotFoundException {
         if(!rootDir.exists() || rootDir.isFile() )
             throw new FileNotFoundException("Root directory is not found or is a file ");
+
+        commandSkeleton.start();;
+        storageSkeleton.start();
 
         createStub(hostname);
 
         Path[] CopyFile = naming_server.register(storageStub,commandStub,Path.list(rootDir));
+
+        System.out.println(CopyFile);
+
+        // Delete those duplicate files
+        for(Path path: CopyFile) {
+            File currentFile = path.toFile(rootDir);
+            File parentFile = new File(currentFile.getParent());
+            currentFile.delete();
+
+            // Delete the parent file if empty
+            while(!parentFile.equals(rootDir)) {
+                if (parentFile.list().length == 0) {
+                    parentFile.delete();
+                    parentFile =  new File(parentFile.getParent());
+                } else {
+                    break;
+                }
+            }
+        }
 
 
     }
@@ -88,7 +111,8 @@ public class StorageServer implements Storage, Command
      */
     public void stop()
     {
-        throw new UnsupportedOperationException("not implemented");
+        storageSkeleton.stop();
+        commandSkeleton.stop();
     }
 
     /** Called when the storage server has shut down.
@@ -104,33 +128,128 @@ public class StorageServer implements Storage, Command
     @Override
     public synchronized long size(Path file) throws FileNotFoundException
     {
-        throw new UnsupportedOperationException("not implemented");
+        File PathToFile = file.toFile(rootDir);
+        if (PathToFile.isDirectory() || !PathToFile.exists())
+            throw new FileNotFoundException("File not found or it is a directory");
+        return PathToFile.length();
     }
 
     @Override
     public synchronized byte[] read(Path file, long offset, int length)
         throws FileNotFoundException, IOException
     {
-        throw new UnsupportedOperationException("not implemented");
+        File PathToFile = file.toFile(rootDir);
+
+        if (PathToFile.isDirectory() || !PathToFile.exists())
+            throw new FileNotFoundException("File not found or it is a directory");
+
+        if (length<0 || (offset+length)>PathToFile.length())
+            throw new IndexOutOfBoundsException("Indexes of reading file is out of bound");
+
+        byte[] readContent = new byte[length];
+
+        FileInputStream readFile = new FileInputStream(PathToFile);
+
+        readFile.read(readContent,(int)offset,length);
+
+        try{
+            readFile.close();
+        }catch (Exception e){}
+
+        return readContent;
     }
 
     @Override
     public synchronized void write(Path file, long offset, byte[] data)
         throws FileNotFoundException, IOException
     {
-        throw new UnsupportedOperationException("not implemented");
+        File PathToFile = file.toFile(rootDir);
+
+        if (PathToFile.isDirectory() || !PathToFile.exists())
+            throw new FileNotFoundException("File not found or it is a directory");
+
+        if (offset<0)
+            throw new IndexOutOfBoundsException("Offset is negative ");
+
+        FileOutputStream writeFile = new FileOutputStream(PathToFile);
+
+        FileChannel c1 = writeFile.getChannel();
+        c1.position(offset);
+        c1.write(ByteBuffer.wrap(data));
+
+        try {
+            writeFile.close();
+        }catch (Exception e){}
+
+        System.out.println("Write successfully");
+
     }
 
     // The following methods are documented in Command.java.
     @Override
     public synchronized boolean create(Path file)
     {
-        throw new UnsupportedOperationException("not implemented");
+
+        if (file.isRoot())
+            return false;
+
+       File createFile = file.toFile(rootDir);
+       File parentFile = file.parent().toFile(rootDir);
+
+        if (!parentFile.exists()){
+            parentFile.mkdirs();
+        }else {
+            return false;
+        }
+
+        if (!createFile.exists()){
+            System.out.println("in");
+            try {
+                createFile.createNewFile();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return true;
+
     }
 
     @Override
     public synchronized boolean delete(Path path)
     {
-        throw new UnsupportedOperationException("not implemented");
+            File deleteFile = path.toFile(rootDir);
+
+            if (path.isRoot())
+                return false;
+
+            if(!deleteFile.exists()){
+                return false;
+            }
+
+
+            if(deleteFile.isFile()){
+                deleteFile.delete();
+                return true;
+            }else {
+                System.out.println("derectory"+deleteFile);
+                for (File f:deleteFile.listFiles()) {
+                    System.out.println(f);
+                    try {
+                                Files.walk(deleteFile.toPath())
+                                .sorted(Comparator.reverseOrder())
+                                .map(java.nio.file.Path :: toFile)
+                                .forEach(File::delete);
+
+                        System.out.println("deleted");
+                        return true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            return false;
     }
 }

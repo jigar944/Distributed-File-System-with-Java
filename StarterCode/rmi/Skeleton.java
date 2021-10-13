@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Random;
 
 /** RMI skeleton
 
@@ -72,6 +73,7 @@ public class Skeleton<T>
 
         this.obj = c;
         this.server = server;
+        this.address = null;
     }
 
     /** Creates a <code>Skeleton</code> with the given initial server address.
@@ -192,8 +194,16 @@ public class Skeleton<T>
 
         try {
             if (address==null){
-                this.address = new InetSocketAddress(7000);
 
+                while(true){
+                    int port = findFreePort();
+                    if (isAvailable(port)){
+                        this.address = new InetSocketAddress(port);
+                        break;
+                    }else {
+                        continue;
+                    }
+                }
             }
 
             serverSocket = new ServerSocket(address.getPort());
@@ -202,12 +212,28 @@ public class Skeleton<T>
             listenThread.start();
 
         } catch (IOException e) {
-            e.printStackTrace();
+           //e.printStackTrace();
         }
 
     }
 
-    public class ListenThread extends Thread{
+    public int findFreePort() {
+        Random random = new Random();
+        String id = String.format("%04d", random.nextInt(10000));
+       return Integer.parseInt(id);
+    }
+
+    public static boolean isAvailable(int portNr) {
+        boolean portFree;
+        try (var ignored = new ServerSocket(portNr)) {
+            portFree = true;
+        } catch (IOException e) {
+            portFree = false;
+        }
+        return portFree;
+    }
+
+    public class ListenThread extends Thread {
 
         @Override
         public void run() {
@@ -263,12 +289,14 @@ public class Skeleton<T>
 
             } catch (Exception e) {
                 try {
+
                     write.writeObject(false);
                     write.writeObject(e.getCause());
                     client.close();
                 } catch (IOException e1) {
                     System.out.println("Error in writing exception");
                 }
+
 
             }
 

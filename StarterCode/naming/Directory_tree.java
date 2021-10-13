@@ -11,13 +11,11 @@ class Node {
     Path p;
     String filename;
     boolean directory;
-    Node left,right;
 
     public Node(Path p, String filename) {
         this.p = p;
         this.filename = filename;
-        this.left = this.right = null;
-        this.directory = false;
+        this.directory = true;
     }
 
     public Path getP() {
@@ -43,13 +41,13 @@ public class Directory_tree extends Node{
 
     public Directory_tree(){
         super(new Path(),"/");
-        this.directory = false;
+        this.directory = true;
     }
     public Directory_tree(Path p,String component,Command c,Storage s) {
         super(p,component);
         this.commandStub = c;
         this.storageStub = s;
-        directory = false;
+        directory = true;
     }
 
 

@@ -20,7 +20,7 @@ import java.lang.ref.*;
 public class TemporaryDirectory
 {
     /** <code>File</code> object representing the directory. */
-    private final File          directory;
+    private final File directory;
     /** Flag used to indicate that the directory has already been removed. This
         is used to allow multiple calls to <code>remove</code>. Calls after the
         first one should not remove the directory - because the directory may

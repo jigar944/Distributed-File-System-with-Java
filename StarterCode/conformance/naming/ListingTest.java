@@ -1,9 +1,10 @@
 package conformance.naming;
 
-import java.io.*;
+import common.Path;
+import test.TestFailed;
+import test.TestUtil;
 
-import test.*;
-import common.*;
+import java.io.FileNotFoundException;
 
 /** Test the naming server <code>list</code> and <code>isDirectory</code>
     methods.
@@ -36,6 +37,7 @@ public class ListingTest extends NamingTest
     private final Path          file1 = new Path("/file");
     private final Path          file2 = new Path("/directory/file");
     private final Path          file3 = new Path("/directory/another_file");
+
 
     /** Creates the <code>ListTest</code> object and sets the notice. */
     public ListingTest()

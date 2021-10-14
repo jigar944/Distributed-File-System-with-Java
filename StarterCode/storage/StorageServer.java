@@ -43,6 +43,7 @@ public class StorageServer implements Storage, Command
         commandSkeleton = new Skeleton<Command>(Command.class,this);
         storageSkeleton = new Skeleton<Storage>(Storage.class,this);
 
+
     }
 
     /** Starts the storage server and registers it with the given naming
@@ -203,9 +204,9 @@ public class StorageServer implements Storage, Command
         }
 
         if (!createFile.exists()){
-            System.out.println("in");
             try {
                 createFile.createNewFile();
+                System.out.println("create file :"+createFile);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,9 +1,9 @@
 package conformance.naming;
 
-import java.io.*;
+import common.Path;
+import test.TestFailed;
 
-import test.*;
-import common.*;
+import java.io.FileNotFoundException;
 
 /** Tests file and directory creation.
 
@@ -211,7 +211,7 @@ public class CreationTest extends NamingTest
             throw new TestFailed("createDirectory threw unexpected exception " +
                                  "when given null as argument", t);
         }
-
+        System.out.println("1");
         // Check that createDirectory rejects paths whose parent directories do
         // not exist.
         try
@@ -228,6 +228,7 @@ public class CreationTest extends NamingTest
                                  "when given new directory whose parent " +
                                  "directory does not exist", t);
         }
+        System.out.println("2");
 
         // Check that createDirectory rejects paths whose parent directories are
         // in fact files.
@@ -245,6 +246,7 @@ public class CreationTest extends NamingTest
                                  "when given new directory whose parent " +
                                  "directory is a file", t);
         }
+        System.out.println("3");
 
         // Check that createDirectory rejects paths to existing directories.
         boolean     result;
@@ -259,7 +261,7 @@ public class CreationTest extends NamingTest
                                  "when given a path to an existing directory",
                                  t);
         }
-
+        System.out.println("4");
         if(result)
         {
             throw new TestFailed("createDirectory accepted a path to an " +
@@ -280,6 +282,7 @@ public class CreationTest extends NamingTest
         if(result)
             throw new TestFailed("createDirectory accepted a path to a file");
 
+        System.out.println("5");
         // Check that createDirectory rejects the root directory as an
         // argument.
         try
@@ -294,6 +297,8 @@ public class CreationTest extends NamingTest
 
         if(result)
             throw new TestFailed("createDirectory accepted the root directory");
+        System.out.println("6");
+
     }
 
     /** Checks that the <code>createFile</code> method rejects invalid

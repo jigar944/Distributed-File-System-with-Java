@@ -43,11 +43,11 @@ public class Directory_tree extends Node{
         super(new Path(),"/");
         this.directory = false;
     }
-    public Directory_tree(Path p,String component,Command c,Storage s) {
+    public Directory_tree(Path p,String component,Command c,Storage s,boolean d) {
         super(p,component);
         this.commandStub = c;
         this.storageStub = s;
-        directory = false;
+        directory = d;
     }
 
 

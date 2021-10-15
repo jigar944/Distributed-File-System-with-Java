@@ -39,6 +39,7 @@ public class ListingTest extends NamingTest
     private final Path          file3 = new Path("/directory/another_file");
 
 
+
     /** Creates the <code>ListTest</code> object and sets the notice. */
     public ListingTest()
     {

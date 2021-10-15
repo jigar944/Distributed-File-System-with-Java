@@ -39,6 +39,14 @@ public class Directory_tree extends Node{
     private Command commandStub;
     private Storage storageStub;
 
+    public Command getCommandStub() {
+        return commandStub;
+    }
+
+    public Storage getStorageStub() {
+        return storageStub;
+    }
+
     public Directory_tree(){
         super(new Path(),"/");
         this.directory = false;

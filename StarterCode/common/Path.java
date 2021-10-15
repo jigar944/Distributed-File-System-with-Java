@@ -181,11 +181,18 @@ public class Path implements Iterable<String>, Serializable
         if (isRoot()){
             throw new IllegalArgumentException("path represents root directory and has no parent.");
         }else {
-            if (this.p.replaceAll("/[a-z]*[_]*[a-z]*$", "").equals("")){
+//            if (this.p.replaceAll("/[a-z]*[_]*[a-z]*$", "").equals("")){
+//                return new Path("/");
+//            }else {
+//                return new Path(this.p.replaceAll("/[a-z]*$", ""));
+//            }
+            List<String> a = new ArrayList<String>(Arrays.asList(p.split("/")));
+            a.remove(a.size()-1);
+            String finallist = String.join("/",a);
+            if (a.size()==1)
                 return new Path("/");
-            }else {
-                return new Path(this.p.replaceAll("/[a-z]*$", ""));
-            }
+            else
+                return new Path(finallist);
 
         }
     }

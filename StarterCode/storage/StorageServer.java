@@ -190,12 +190,25 @@ public class StorageServer implements Storage, Command
     @Override
     public synchronized boolean create(Path file)
     {
+        System.out.println("path : "+file);
 
         if (file.isRoot())
             return false;
 
        File createFile = file.toFile(rootDir);
        File parentFile = file.parent().toFile(rootDir);
+
+       if (file.parent().isRoot()){
+           if (!createFile.exists()) {
+               try {
+                   createFile.createNewFile();
+                   return true;
+               } catch (IOException e) {
+                   e.printStackTrace();
+               }
+           }
+       }
+
 
         if (!parentFile.exists()){
             parentFile.mkdirs();
@@ -206,7 +219,6 @@ public class StorageServer implements Storage, Command
         if (!createFile.exists()){
             try {
                 createFile.createNewFile();
-                System.out.println("create file :"+createFile);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -181,7 +181,7 @@ public class NamingServer implements Service, Registration {
 
         if (isDirectory(directory)) {
 
-           Stream<Directory_tree> s = allNodes.stream().filter(p -> p.getP().toString().contains(directory.toString()));
+           Stream<Directory_tree> s = allNodes.stream().filter(p -> p.getP().toString().startsWith(directory.toString()));
             for (Directory_tree dt:s.collect(Collectors.toList())) {
                 if (directory.isRoot()){
                     list.add(dt.getP().toString().replaceFirst(directory.toString(),"").split("^*/")[0]);
@@ -220,12 +220,11 @@ public class NamingServer implements Service, Registration {
                 return false;
             }
         }
-        System.out.println("path :"+file.toString());
+
 
         Storage tempStorage = stubs.keys().nextElement();
         Command tempCommand = stubs.get(tempStorage);
 
-        System.out.println("path :"+file.toString());
         allNodes.add(new Directory_tree(new Path(file.toString()),file.last(),tempCommand,tempStorage,false));
         tempCommand.create(new Path(file.toString()));
         listOffiles.add(new File(file.toString()));
@@ -256,21 +255,42 @@ public class NamingServer implements Service, Registration {
             allNodes.add(new Directory_tree(new Path(directory.toString()),directory.last(),tempCommand,tempStorage,true));
             listOffiles.add(new File(directory+"/"));
 
-        for (Directory_tree dT:allNodes) {
-            System.out.println(dT.getP());
-        }
-
         return true;
     }
 
     @Override
     public boolean delete(Path path) throws FileNotFoundException {
-        throw new UnsupportedOperationException("not implemented");
+
+        if (path==null)
+            throw new NullPointerException("Null is provided");
+
+        if (path.isRoot())
+            return false;
+
+        if (!isDirectory(path.parent())){
+            throw new FileNotFoundException("parent directory is not exist");
+        }
+        return true;
     }
 
     @Override
     public Storage getStorage(Path file) throws FileNotFoundException {
-        throw new UnsupportedOperationException("not implemented");
+
+        if (file==null)
+            throw new NullPointerException("Null is provided");
+
+
+        if (!isDirectory(file.parent()))
+            throw new FileNotFoundException("Direcetories not exist");
+
+
+
+        for (Directory_tree dT:allNodes) {
+            if (dT.getP().toString().equals(file.toString())){
+                return dT.getStorageStub();
+            }
+        }
+        throw new FileNotFoundException("File not found");
     }
 
     // The method register is documented in Registration.java.

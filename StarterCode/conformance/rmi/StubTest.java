@@ -48,8 +48,6 @@ public class StubTest extends Test
     @Override
     protected void initialize() throws TestFailed
     {
-        System.out.println();
-        System.out.println("***  StubTest starts");
         address = new InetSocketAddress(5000);
         listening = true;
 
@@ -76,7 +74,6 @@ public class StubTest extends Test
         {
             throw new TestFailed("unable to create dummy skeleton", t);
         }
-        System.out.println("Completed 1");
     }
 
     /** Performs the test. */
@@ -93,7 +90,6 @@ public class StubTest extends Test
         {
             throw new TestFailed("unable to start dummy skeleton", t);
         }
-        System.out.println("Completed 3");
         ensureClassRejected();
 
         ensureNonRemoteInterfaceRejected();
@@ -104,9 +100,6 @@ public class StubTest extends Test
 
         ensureStubConnects();
 
-        System.out.println("Completed 22");
-
-        System.out.println("StubTest ends");
     }
 
     /** Checks that a stub connects to the server for which it was created.
@@ -129,7 +122,7 @@ public class StubTest extends Test
                                  "test server", t);
         }
 
-        System.out.println("Completed 20");
+
         // Bind the listening socket.
         try
         {
@@ -140,7 +133,7 @@ public class StubTest extends Test
             throw new TestFailed("unable to bind listening socket to " +
                                  "address", e);
         }
-        System.out.println("Completed 21");
+
         // Start the listening thread. The thread will not be able to call wake
         // until this function calls wait.
         new Thread(new ConnectionCheckThread()).start();
@@ -158,7 +151,7 @@ public class StubTest extends Test
             throw new TestFailed("exception when attempting to connect to " +
                                  "server", t);
         }
-        System.out.println("Completed 22");
+
         throw new TestFailed("stub sent no data");
     }
 
@@ -200,7 +193,6 @@ public class StubTest extends Test
                                  "an unexpected exception when given a " +
                                  "skeleton with an unassigned address", t);
         }
-        System.out.println("Completed 2");
     }
 
     /** Ensures that a <code>Stub</code> cannot be created from a class rather
@@ -225,7 +217,6 @@ public class StubTest extends Test
                                  "constructor threw an unexpected exception " +
                                  "when given a class", t);
         }
-        System.out.println("Completed 4");
     }
 
     /** Ensures that a <code>Stub</code> cannot be created from a non-remote
@@ -250,7 +241,6 @@ public class StubTest extends Test
                                  "constructor threw an unexpected exception " +
                                  "when given a non-remote interface", t);
         }
-        System.out.println("Completed 5");
     }
 
     /** Ensures that both <code>Stub.create</code> methods throw
@@ -278,7 +268,6 @@ public class StubTest extends Test
                                  "for first argument", t);
         }
 
-        System.out.println("Completed 6");
         try
         {
             TestInterface   stub = Stub.create(null, skeleton, "127.0.0.1");
@@ -294,7 +283,6 @@ public class StubTest extends Test
                                  "null for first argument", t);
         }
 
-        System.out.println("Completed 7");
         try
         {
             TestInterface   stub = Stub.create(null, address);
@@ -310,7 +298,6 @@ public class StubTest extends Test
                                  "null for first argument", t);
         }
 
-        System.out.println("Completed 8");
         // Make sure that null for the second argument is rejected.
         try
         {
@@ -328,7 +315,6 @@ public class StubTest extends Test
                                  "for second argument", t);
         }
 
-        System.out.println("Completed 9");
         try
         {
             TestInterface   stub =
@@ -346,7 +332,6 @@ public class StubTest extends Test
                                  "null for second argument", t);
         }
 
-        System.out.println("Completed 10");
         try
         {
             TestInterface   stub =
@@ -363,7 +348,6 @@ public class StubTest extends Test
                                  "null for second argument", t);
         }
 
-        System.out.println("Completed 11");
         // Make sure that the three-argument form of create rejects null for the
         // third argument.
         try
@@ -382,7 +366,6 @@ public class StubTest extends Test
                                  "null for third argument", t);
         }
 
-        System.out.println("Completed 12");
     }
 
     /** Ensures that stubs for the same skeleton are equal and have the same
@@ -405,7 +388,6 @@ public class StubTest extends Test
         {
             throw new TestFailed("unable to create stub", t);
         }
-        System.out.println("Completed 13");
         // Create a third stub for a different skeleton. The port is in the
         // reserved port range, so it is not one of the ports that the system
         // may automatically assign to the other skeletons (and therefore the
@@ -425,7 +407,6 @@ public class StubTest extends Test
             throw new TestFailed("equals threw an unexpected exception when " +
                                  "comparing a stub to null", t);
         }
-        System.out.println("Completed 14");
         // Check that the first two stubs are equal.
         try
         {
@@ -441,7 +422,6 @@ public class StubTest extends Test
             throw new TestFailed("equals threw an unexpected exception when " +
                                  "comparing equal stubs", t);
         }
-        System.out.println("Completed 15");
         // Check that the first stub is different from the last.
         try
         {
@@ -454,7 +434,6 @@ public class StubTest extends Test
             throw new TestFailed("equals threw an unexpected exception when " +
                                  "comparing unequal stubs", t);
         }
-        System.out.println("Completed 16");
         // Check that the first two stubs have the same hash code.
         try
         {
@@ -466,7 +445,6 @@ public class StubTest extends Test
         {
             throw new TestFailed("hashCode threw an unexpected exception", t);
         }
-        System.out.println("Completed 17");
         // Check that the first and third stubs have different hash codes.
         try
         {
@@ -478,7 +456,6 @@ public class StubTest extends Test
         {
             throw new TestFailed("hashCode threw an unexpected exception", t);
         }
-        System.out.println("Completed 18");
         // Check that the toString method is implemented.
         try
         {
@@ -488,7 +465,6 @@ public class StubTest extends Test
         {
             throw new TestFailed("toString threw an unexpected exception", t);
         }
-        System.out.println("Completed 19");
     }
 
     /** Thread listening for a connection. */

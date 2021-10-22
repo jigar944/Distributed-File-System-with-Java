@@ -41,14 +41,13 @@ public class PathTest extends Test
     @Override
     protected void perform() throws TestFailed
     {
-        System.out.println();
-        System.out.println("***  PathTest starts");
+
         testConstructors();
         testSplitting();
         testSubpaths();
         testListing();
         testIterator();
-        System.out.println("***  PathTest ends.");
+
     }
 
     /** Tests the <code>list</code> method.
@@ -251,7 +250,7 @@ public class PathTest extends Test
             if(!root.equals(alternative_root))
                 throw new TestFailed("root directories not equal");
 
-            System.out.println("Child "+child+" Al : "+alternative_child);
+
             if(!child.equals(alternative_child))
                 throw new TestFailed("same children not equal");
 

@@ -78,7 +78,6 @@ public class StorageServer implements Storage, Command
 
         Path[] CopyFile = naming_server.register(storageStub,commandStub,Path.list(rootDir));
 
-        System.out.println(CopyFile);
 
         // Delete those duplicate files
         for(Path path: CopyFile) {
@@ -182,16 +181,12 @@ public class StorageServer implements Storage, Command
             writeFile.close();
         }catch (Exception e){}
 
-        System.out.println("Write successfully");
-
     }
 
     // The following methods are documented in Command.java.
     @Override
     public synchronized boolean create(Path file)
     {
-        System.out.println("path : "+file);
-
         if (file.isRoot())
             return false;
 
@@ -246,17 +241,13 @@ public class StorageServer implements Storage, Command
                 deleteFile.delete();
                 return true;
             }else {
-                System.out.println("derectory"+deleteFile);
                 for (File f:deleteFile.listFiles()) {
-                    System.out.println(f);
                     try {
                                 Files.walk(deleteFile.toPath())
                                 .sorted(Comparator.reverseOrder())
                                 .map(java.nio.file.Path :: toFile)
                                 .forEach(File::delete);
-
-                        System.out.println("deleted");
-                        return true;
+                                return true;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

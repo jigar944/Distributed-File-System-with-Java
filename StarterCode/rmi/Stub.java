@@ -61,6 +61,7 @@ public abstract class Stub
             throw new NullPointerException("Anyone parameter or both is null");
         }
 
+
         if (skeleton.getAddress() == null){
             throw new IllegalStateException("Address is not assigned");
         }

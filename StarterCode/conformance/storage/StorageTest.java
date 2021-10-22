@@ -57,7 +57,6 @@ abstract class StorageTest extends Test
     protected void initialize() throws TestFailed
     {
         // Create the temporary directory and populate it with files.
-        System.out.println("***  StorageTest Starts !");
         try
         {
             directory = new TemporaryDirectory();
@@ -67,7 +66,6 @@ abstract class StorageTest extends Test
             throw new TestFailed("unable to create temporary directory", t);
         }
 
-      //  System.out.println("Completed 1");
         try
         {
             if(test_files != null)
@@ -81,7 +79,6 @@ abstract class StorageTest extends Test
             throw new TestFailed("unable to add file to temporary " +
                                  "directory", t);
         }
-      //  System.out.println("Completed 2");
         // Assemble the list of expected files.
         Path[]      expect_files = null;
 
@@ -98,7 +95,6 @@ abstract class StorageTest extends Test
                 expect_files[index] = current_path;
             }
         }
-      //  System.out.println("Completed 3");
         // Create and start the test naming server.
         try
         {
@@ -112,10 +108,8 @@ abstract class StorageTest extends Test
         {
             throw new TestFailed("unable to create test naming server", t);
         }
-       // System.out.println("Completed 4");
         naming_server.start();
         naming_stub = naming_server.stub();
-       // System.out.println("Completed 5");
         // Create the storage server.
         try
         {
@@ -125,7 +119,6 @@ abstract class StorageTest extends Test
         {
             throw new TestFailed("unable to create storage server", t);
         }
-     //   System.out.println("Completed 6");
         // Start the storage server.
         try
         {
@@ -135,12 +128,10 @@ abstract class StorageTest extends Test
         {
             throw new TestFailed("cannot start storage server", t);
         }
-      //  System.out.println("Completed 7");
         // Retrieve the storage server stubs.
         client_stub = naming_server.clientInterface();
         command_stub = naming_server.commandInterface();
-       // System.out.println("Completed 8");
-        System.out.println("***  StorageTest ends !");
+
 
     }
 

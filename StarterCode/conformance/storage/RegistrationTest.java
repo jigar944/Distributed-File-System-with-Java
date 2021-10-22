@@ -50,8 +50,7 @@ public class RegistrationTest extends StorageTest
     @Override
     protected void perform() throws TestFailed
     {
-        System.out.println();
-        System.out.println("***  RegistrationTest Starts !");
+
         // The registration server has already checked that the storage server
         // has transmitted the correct file list. Check that the storage server
         // has deleted the files it was commanded to delete by checking the
@@ -72,13 +71,11 @@ public class RegistrationTest extends StorageTest
                                  e);
         }
 
-        System.out.println("completed 1");
         if(!TestUtil.sameElements(listed, remaining_files))
         {
             throw new TestFailed("storage server did not remove correct " +
                                  "files after registration");
         }
-        System.out.println("completed 2");
 
         // Check that empty directories have been pruned.
         File    pruned = new File(directory.root(), "prune");
@@ -88,6 +85,5 @@ public class RegistrationTest extends StorageTest
             throw new TestFailed("storage server did not prune directories " +
                                  "that contain no files");
         }
-        System.out.println("completed 3");
     }
 }

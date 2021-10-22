@@ -79,7 +79,6 @@ public class ProxyHandler implements InvocationHandler, Serializable {
             }catch (NullPointerException e){}
             catch (Exception e){
                 new_Socket.close();
-                e.printStackTrace();
                 throw new RMIException("RMI");
             }
             if (result == false) {

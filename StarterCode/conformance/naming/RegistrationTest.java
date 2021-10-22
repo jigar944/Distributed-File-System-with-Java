@@ -57,20 +57,20 @@ public class RegistrationTest extends NamingTest
     @Override
     protected void perform() throws TestFailed
     {
-        System.out.println("start");
+
         synchronized(this)
         {
             badServer.testNullPointers();
         }
 
-        System.out.println("Completed 1");
+
         synchronized(this)
         {
             badServer.testDuplicateRegistration();
         }
-        System.out.println("Completed 2");
+
         testMerging();
-        System.out.println("Completed 3");
+
 
     }
 

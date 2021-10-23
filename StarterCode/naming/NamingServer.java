@@ -3,7 +3,6 @@ package naming;
 import common.Path;
 import rmi.RMIException;
 import rmi.Skeleton;
-import rmi.Stub;
 import storage.Command;
 import storage.Storage;
 
@@ -41,20 +40,12 @@ import java.util.stream.Stream;
  */
 public class NamingServer implements Service, Registration {
 
-
-//    String temp_root_name = System.getProperty("java.io.tmpdir");
-//    File temp = new File(temp_root_name);
-//    File tempRoot = new File(temp,"Naming-server");
     Skeleton<Registration> registrationSkeleton;
     Skeleton<Service> serviceSkeleton;
-    Stub registrationStub;
-    Directory_tree tree;
-    Stub serviceStub;
     HashSet<Command> RegisteredServer = new HashSet<>();
     ArrayList<Directory_tree> allNodes = new ArrayList<>();
     List<File> listOffiles = new ArrayList<>();
     Hashtable<Storage,Command> stubs = new Hashtable<>();
-    public int count = 0;
 
     /**
      * Creates the naming server object.
@@ -70,10 +61,6 @@ public class NamingServer implements Service, Registration {
         InetSocketAddress portOfService = new InetSocketAddress(NamingStubs.SERVICE_PORT);
         serviceSkeleton = new Skeleton<Service>(Service.class, this, portOfService);
 
-//        if (tempRoot.listFiles()!=null){
-//            tempRoot.delete();
-//            tempRoot = new File(temp,"Naming-server");
-//        }
     }
 
     /**
@@ -137,20 +124,6 @@ public class NamingServer implements Service, Registration {
 
         if (path.isRoot())
             return true;
-
-//        for (File dT:listOffiles) {
-//            File root = new File("/");
-//            if (("/"+dT.getName()).equals(path.toString()) && dT.getParentFile().equals(root)){
-//                return false;
-//            }
-//            String a = dT.getPath().replaceAll("\\\\","/");
-//            if (a.contains(path+"/")){
-//                return true;
-//            }
-//            if (dT.getPath().equals(Paths.get(path.toString()).toString()))
-//                return false;
-//        }
-
 
         for (Directory_tree dT:allNodes) {
 
@@ -270,6 +243,13 @@ public class NamingServer implements Service, Registration {
         if (!isDirectory(path.parent())){
             throw new FileNotFoundException("parent directory is not exist");
         }
+
+        try {
+            stubs.get(getStorage(path)).delete(path);
+        } catch (RMIException e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
@@ -279,11 +259,8 @@ public class NamingServer implements Service, Registration {
         if (file==null)
             throw new NullPointerException("Null is provided");
 
-
         if (!isDirectory(file.parent()))
-            throw new FileNotFoundException("Direcetories not exist");
-
-
+            throw new FileNotFoundException("Directories not exist");
 
         for (Directory_tree dT:allNodes) {
             if (dT.getP().toString().equals(file.toString())){

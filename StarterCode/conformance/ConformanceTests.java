@@ -41,12 +41,8 @@ public class ConformanceTests
                          conformance.rmi.ThreadTest.class,
                         conformance.naming.ContactTest.class,
                         conformance.storage.RegistrationTest.class,
-
                         conformance.storage.AccessTest.class,
                          conformance.storage.DirectoryTest.class,
-
-
-
                          conformance.naming.RegistrationTest.class,
                          conformance.naming.ListingTest.class,
                          conformance.naming.CreationTest.class,

@@ -31,7 +31,6 @@ public class Path implements Iterable<String>, Serializable
     String p;
     String root= "/";
 
-
     public Path()
     {
         p = root;
@@ -62,8 +61,6 @@ public class Path implements Iterable<String>, Serializable
             }else {
                 p = path.p +"/"+ component;
             }
-
-
         }
     }
 
@@ -81,16 +78,13 @@ public class Path implements Iterable<String>, Serializable
      */
     public Path(String path)
     {
-
-
         String temp = path.replaceAll("/+$","");
         String temp2 = temp.replaceFirst("/+","");
 
         if (!path.startsWith("/") || path.contains(":")){
-            throw new IllegalArgumentException("Path string contains illegalexpressions");
+            throw new IllegalArgumentException("Path string contains illegal expressions");
         }else {
             this.p = root+temp2;
-
         }
     }
 
@@ -105,7 +99,6 @@ public class Path implements Iterable<String>, Serializable
     @Override
     public Iterator<String> iterator()
     {
-
         String[] ar = this.p.replaceFirst("/","").split("/");
         List<String> arrayList = Arrays.asList(ar);
         Iterator<String> itr = arrayList.iterator();
@@ -135,7 +128,6 @@ public class Path implements Iterable<String>, Serializable
         }
 
         ArrayList<Path> newPath =getArrayOfAllPath(new Path(),directory,new ArrayList<>());
-
         Path[] path = new Path[0];
 
         return newPath.toArray(path);
@@ -146,7 +138,6 @@ public class Path implements Iterable<String>, Serializable
         File[] file = directory.listFiles();
 
         for (File f:file) {
-
             if (f.isFile()){
                 paths.add(new Path(p,f.getName()));
             }else{
@@ -188,7 +179,6 @@ public class Path implements Iterable<String>, Serializable
                 return new Path("/");
             else
                 return new Path(finallist);
-
         }
     }
 
@@ -234,7 +224,7 @@ public class Path implements Iterable<String>, Serializable
      */
     public File toFile(File root)
     {
-       return new File(root.getPath()+(this.toString()));
+       return new File(root.getPath()+(this));
     }
 
     /** Compares two paths for equality.
@@ -269,6 +259,6 @@ public class Path implements Iterable<String>, Serializable
     @Override
     public String toString()
     {
-        return this.p;
+        return p;
     }
 }

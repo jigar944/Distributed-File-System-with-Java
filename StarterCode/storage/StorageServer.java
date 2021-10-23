@@ -236,7 +236,6 @@ public class StorageServer implements Storage, Command
                 return false;
             }
 
-
             if(deleteFile.isFile()){
                 deleteFile.delete();
                 return true;

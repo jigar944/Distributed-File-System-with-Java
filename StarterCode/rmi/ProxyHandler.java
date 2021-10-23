@@ -54,8 +54,6 @@ public class ProxyHandler implements InvocationHandler, Serializable {
         }else if (functionName.equals("toString")){
             return "InetAddress of Stub is :" + address + " Interface : "+c;
         }else {
-
-
             try{
 
                 new_Socket.connect(address);
@@ -65,7 +63,6 @@ public class ProxyHandler implements InvocationHandler, Serializable {
 
                 write.writeObject(functionName);
                 write.writeObject(tyesOfParamates);
-
                 write.writeObject(args);
 
 
@@ -79,7 +76,7 @@ public class ProxyHandler implements InvocationHandler, Serializable {
             }catch (NullPointerException e){}
             catch (Exception e){
                 new_Socket.close();
-                throw new RMIException("RMI");
+                throw new RMIException("RMI exception");
             }
             if (result == false) {
                 throw   ((Throwable) MarshalledPacket);

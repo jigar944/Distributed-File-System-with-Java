@@ -207,13 +207,10 @@ public class Skeleton<T>
             }
 
             serverSocket = new ServerSocket(address.getPort());
-
             listenThread = new ListenThread();
             listenThread.start();
 
-        } catch (IOException e) {
-           //e.printStackTrace();
-        }
+        } catch (IOException e) {        }
 
     }
 
@@ -297,7 +294,6 @@ public class Skeleton<T>
                     System.out.println("Error in writing exception");
                 }
 
-
             }
 
         }
@@ -315,7 +311,6 @@ public class Skeleton<T>
      */
     public synchronized void stop()
     {
-
         try {
             if(serverSocket != null && !serverSocket.isClosed()){
                 serverSocket.close();

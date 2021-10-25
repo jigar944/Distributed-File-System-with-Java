@@ -9,7 +9,6 @@ import storage.Storage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.InetSocketAddress;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -127,16 +126,16 @@ public class NamingServer implements Service, Registration {
 
         for (Directory_tree dT:allNodes) {
 
+            //if list contains the same path
             if (dT.getP().toString().equals(path.toString()))
                 return dT.isDirectory();
             String a = dT.getP().toString().replaceAll("\\\\","/");
+
+            //if path is a substring of any list of paths then it is a directory
             if (a.contains(path+"/")){
                 return true;
             }
-            if (dT.getP().toString().equals(Paths.get(path.toString()).toString()))
-                return dT.isDirectory();
         }
-
         throw new FileNotFoundException("File not found");
     }
 
@@ -155,19 +154,17 @@ public class NamingServer implements Service, Registration {
         if (isDirectory(directory)) {
 
            Stream<Directory_tree> s = allNodes.stream().filter(p -> p.getP().toString().startsWith(directory.toString()));
+
             for (Directory_tree dt:s.collect(Collectors.toList())) {
                 if (directory.isRoot()){
                     list.add(dt.getP().toString().replaceFirst(directory.toString(),"").split("^*/")[0]);
                 }else {
                     list.add(dt.getP().toString().replaceFirst(directory.toString()+"/","").split("/")[0]);
                 }
-
             }
-
         }
 
-        String[] s = new String[0];
-        return list.toArray(s);
+        return list.toArray(new String[0]);
     }
 
     @Override
@@ -198,8 +195,13 @@ public class NamingServer implements Service, Registration {
         Storage tempStorage = stubs.keys().nextElement();
         Command tempCommand = stubs.get(tempStorage);
 
+        //adding new file in directory tree
         allNodes.add(new Directory_tree(new Path(file.toString()),file.last(),tempCommand,tempStorage,false));
+
+        //creating file in server storage file
         tempCommand.create(new Path(file.toString()));
+
+        //adding file in to list
         listOffiles.add(new File(file.toString()));
 
         return true;
@@ -225,7 +227,10 @@ public class NamingServer implements Service, Registration {
             Storage tempStorage = stubs.keys().nextElement();
             Command tempCommand = stubs.get(tempStorage);
 
+            //adding new directory in directory tree
             allNodes.add(new Directory_tree(new Path(directory.toString()),directory.last(),tempCommand,tempStorage,true));
+
+            //adding directory in list
             listOffiles.add(new File(directory+"/"));
 
         return true;
@@ -245,6 +250,10 @@ public class NamingServer implements Service, Registration {
         }
 
         try {
+            for (Directory_tree dT:allNodes) {
+                if (dT.getP().toString().startsWith(path.toString()))
+                    allNodes.remove(dT);
+            }
             stubs.get(getStorage(path)).delete(path);
         } catch (RMIException e) {
             e.printStackTrace();
@@ -284,6 +293,7 @@ public class NamingServer implements Service, Registration {
 
         RegisteredServer.add(command_stub);
 
+        //checkduplicatefiles returns the list of files that are already exist in naming server
         ArrayList<Path> copyfiles = checkduplicaefiles(files, client_stub, command_stub);
         Path[] toArray = new Path[0];
 
@@ -294,6 +304,7 @@ public class NamingServer implements Service, Registration {
 
         ArrayList<Path> copyFiles = new ArrayList<>();
         for (Path p : files) {
+            //exist function returns boolean value that if path is exit or not in naming server
             if (exist(p, storageStub, commandStub, copyFiles)) {
                 continue;
             }
@@ -303,13 +314,12 @@ public class NamingServer implements Service, Registration {
 
     private boolean exist(Path p, Storage storageStub, Command commandStub, ArrayList<Path> list) {
 
-
         if (p.isRoot()) {
             return true;
         }
 
         if (allNodes.stream().map(Directory_tree::getP).collect(Collectors.toList()).contains(p) ||
-                    allNodes.stream().filter(g -> g.getP().toString().contains(p.toString()+"/")).collect(Collectors.toList()).size() > 0) {
+                    allNodes.stream().filter(g -> g.getP().toString().contains(p+"/")).collect(Collectors.toList()).size() > 0) {
             list.add(p);
             return false;
         }
@@ -333,7 +343,6 @@ public class NamingServer implements Service, Registration {
                 }
 
                 if (!exist) {
-
                     allNodes.add(new Directory_tree(new Path(p.toString()), ArrayPath.get(1), commandStub, storageStub,false));
                     listOffiles.add(new File(p.toString()));
                 }

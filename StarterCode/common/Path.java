@@ -33,6 +33,7 @@ public class Path implements Iterable<String>, Serializable
 
     public Path()
     {
+        //assign root directory
         p = root;
     }
 
@@ -78,6 +79,7 @@ public class Path implements Iterable<String>, Serializable
      */
     public Path(String path)
     {
+        //replacing last index forward slash in path string
         String temp = path.replaceAll("/+$","");
         String temp2 = temp.replaceFirst("/+","");
 
@@ -100,7 +102,9 @@ public class Path implements Iterable<String>, Serializable
     public Iterator<String> iterator()
     {
         String[] ar = this.p.replaceFirst("/","").split("/");
+        //split string path to arraylist
         List<String> arrayList = Arrays.asList(ar);
+        //iterating arraylist
         Iterator<String> itr = arrayList.iterator();
         return itr;
     }
@@ -119,6 +123,7 @@ public class Path implements Iterable<String>, Serializable
     {
 
         File tempFile = new File(directory.getAbsolutePath());
+
         if (!tempFile.exists()){
             throw new FileNotFoundException("Root directory does not exist");
         }
@@ -127,10 +132,10 @@ public class Path implements Iterable<String>, Serializable
             throw new IllegalArgumentException("Parameter directory does not a directory.");
         }
 
+        //fetching list of files in particular directory
         ArrayList<Path> newPath =getArrayOfAllPath(new Path(),directory,new ArrayList<>());
-        Path[] path = new Path[0];
 
-        return newPath.toArray(path);
+        return newPath.toArray(new Path[0]);
     }
 
     private static ArrayList<Path> getArrayOfAllPath(Path p,File directory, ArrayList<Path> paths) {

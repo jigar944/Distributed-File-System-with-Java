@@ -28,12 +28,12 @@ public class ProxyHandler implements InvocationHandler, Serializable {
         String functionName = method.getName();
         Class[] tyesOfParamates = method.getParameterTypes();
         Object MarshalledPacket = null;
-        boolean result = false;
+        boolean flag = false;
         ObjectOutputStream write = null;
         ObjectInputStream read = null;
         Socket new_Socket = new Socket();
-        //Local methods - Equal(),hashcode(),toString()
 
+        //Local methods - Equal(),hashcode(),toString()
         if (functionName.equals("equals")){
             java.lang.reflect.Proxy argument = (java.lang.reflect.Proxy) args[0];
 
@@ -61,12 +61,13 @@ public class ProxyHandler implements InvocationHandler, Serializable {
                 write = new ObjectOutputStream(new_Socket.getOutputStream());
                 read = new ObjectInputStream(new_Socket.getInputStream());
 
+                //marshaling method name,parameter types, and arguments
                 write.writeObject(functionName);
                 write.writeObject(tyesOfParamates);
                 write.writeObject(args);
 
 
-                result = (boolean)read.readObject();
+                flag = (boolean)read.readObject();
                 MarshalledPacket = read.readObject();
 
                 new_Socket.close();
@@ -78,7 +79,7 @@ public class ProxyHandler implements InvocationHandler, Serializable {
                 new_Socket.close();
                 throw new RMIException("RMI exception");
             }
-            if (result == false) {
+            if (flag == false) {
                 throw   ((Throwable) MarshalledPacket);
             }
         }

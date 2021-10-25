@@ -78,6 +78,16 @@ public abstract class Stub
 
     }
 
+    /**
+     * checking that interface methods are throwing RMIException or not
+     *
+     * @param c An object representing the class of the interface for which the
+     *      skeleton server is to handle method call requests.
+     * @param <T>
+     * @return <code>true</code> if object c does represent an interface whose all methods throws RMIException
+     *      <code>false</code> otherwise.
+     */
+
     private static <T> boolean verifyMethods(Class<T> c) {
         Method[] methods = c.getDeclaredMethods();
 
